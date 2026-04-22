@@ -1,0 +1,10 @@
+{
+  "accuracy": 1.0,
+  "precision": 1.0,
+  "recall": 1.0,
+  "f1": 1.0,
+  "auc": 1.0,
+  "train_size": 5100,
+  "test_size": 900,
+  "vocab_size": 1627
+}

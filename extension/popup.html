@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PhishGuard AI</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+<div class="app">
+
+  <!-- ── HEADER ─────────────────────────────────── -->
+  <header class="header">
+    <div class="logo">
+      <div class="logo-shield">🛡️</div>
+      <div class="logo-text">Phish<span class="logo-accent">Guard</span></div>
+      <div class="logo-version">v3.0</div>
+    </div>
+    <div class="server-status">
+      <div class="status-dot" id="statusDot"></div>
+      <span id="statusLabel">Connecting</span>
+    </div>
+  </header>
+
+  <!-- ── TABS ───────────────────────────────────── -->
+  <div class="tab-bar">
+    <button class="tab-btn active" id="tabCurrent">
+      <span>⚡</span> Live Analysis
+    </button>
+    <button class="tab-btn" id="tabHistory">
+      <span>📋</span> History
+    </button>
+  </div>
+
+  <!-- ══════════════════════════════════════════════
+       TAB 1: LIVE ANALYSIS
+  ══════════════════════════════════════════════════ -->
+  <div id="panelCurrent" class="panel active">
+
+    <!-- URL Card -->
+    <div class="url-card">
+      <div class="url-card-label">CURRENT PAGE</div>
+      <div class="url-card-value" id="targetUrl">Loading...</div>
+    </div>
+
+    <!-- Risk Gauge -->
+    <div class="gauge-section">
+      <div class="gauge-wrap">
+        <svg viewBox="0 0 200 120" class="gauge-svg">
+          <!-- Gradient defs -->
+          <defs>
+            <linearGradient id="gaugeGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+              <stop offset="0%"   stop-color="#10B981"/>
+              <stop offset="50%"  stop-color="#F59E0B"/>
+              <stop offset="100%" stop-color="#EF4444"/>
+            </linearGradient>
+            <filter id="glow">
+              <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+              <feMerge><feMergeNode in="coloredBlur"/><feMergeNode in="SourceGraphic"/></feMerge>
+            </filter>
+          </defs>
+          <!-- Track -->
+          <path d="M 20 100 A 80 80 0 0 1 180 100"
+                fill="none" stroke="rgba(255,255,255,0.06)"
+                stroke-width="16" stroke-linecap="round"/>
+          <!-- Fill -->
+          <path id="gaugeFill"
+                d="M 20 100 A 80 80 0 0 1 180 100"
+                fill="none" stroke="url(#gaugeGrad)"
+                stroke-width="16" stroke-linecap="round"
+                stroke-dasharray="251.3" stroke-dashoffset="251.3"
+                filter="url(#glow)"
+                style="transition: stroke-dashoffset 1.4s cubic-bezier(0.34,1.56,0.64,1)"/>
+          <!-- Score -->
+          <text id="gaugeScore" x="100" y="98"
+                text-anchor="middle"
+                font-family="Inter,sans-serif"
+                font-size="28" font-weight="800"
+                fill="white">--%</text>
+          <text x="100" y="114"
+                text-anchor="middle"
+                font-family="Inter,sans-serif"
+                font-size="9" font-weight="500"
+                fill="rgba(255,255,255,0.35)" letter-spacing="2">RISK SCORE</text>
+        </svg>
+      </div>
+
+      <!-- Risk Level Badge -->
+      <div class="risk-badge" id="riskBadge">
+        <span class="risk-icon" id="riskIcon">🔍</span>
+        <span class="risk-label" id="riskLabel">ANALYZING</span>
+      </div>
+
+      <!-- Action -->
+      <div class="risk-action" id="riskAction">Connecting to PhishGuard engine...</div>
+    </div>
+
+    <!-- Model Info (ML vs Rule badge) -->
+    <div class="model-info-row" id="modelInfoRow" style="display:none">
+      <div class="model-badge" id="urlMethodBadge">URL: --</div>
+      <div class="model-badge" id="textMethodBadge">Text: --</div>
+      <div class="model-badge">Visual: Rule-based</div>
+    </div>
+
+    <!-- Modality Breakdown -->
+    <div class="breakdown-card">
+      <div class="card-title">Multi-Modal Analysis</div>
+
+      <div class="modality-row">
+        <div class="mod-icon">🌐</div>
+        <div class="mod-body">
+          <div class="mod-label">URL Structure</div>
+          <div class="mod-bar-track"><div class="mod-bar" id="barUrl"></div></div>
+        </div>
+        <div class="mod-pct" id="pctUrl">--%</div>
+      </div>
+
+      <div class="modality-row">
+        <div class="mod-icon">📝</div>
+        <div class="mod-body">
+          <div class="mod-label">Text / NLP</div>
+          <div class="mod-bar-track"><div class="mod-bar" id="barText"></div></div>
+        </div>
+        <div class="mod-pct" id="pctText">--%</div>
+      </div>
+
+      <div class="modality-row">
+        <div class="mod-icon">🖼️</div>
+        <div class="mod-body">
+          <div class="mod-label">Visual Layout</div>
+          <div class="mod-bar-track"><div class="mod-bar" id="barImage"></div></div>
+        </div>
+        <div class="mod-pct" id="pctImage">--%</div>
+      </div>
+
+      <div class="modality-row">
+        <div class="mod-icon">🎙️</div>
+        <div class="mod-body">
+          <div class="mod-label">Audio / Vishing</div>
+          <div class="mod-bar-track"><div class="mod-bar" id="barAudio"></div></div>
+        </div>
+        <div class="mod-pct" id="pctAudio">--%</div>
+      </div>
+
+      <div class="modality-row">
+        <div class="mod-icon">📹</div>
+        <div class="mod-body">
+          <div class="mod-label">Video / Deepfake</div>
+          <div class="mod-bar-track"><div class="mod-bar" id="barVideo"></div></div>
+        </div>
+        <div class="mod-pct" id="pctVideo">--%</div>
+      </div>
+    </div>
+
+    <!-- Fusion Agreement -->
+    <div class="fusion-row" id="fusionRow" style="display:none">
+      <div class="fusion-label">Cross-Modal Correlation</div>
+      <div class="fusion-value" id="fusionValue">--</div>
+    </div>
+
+    <!-- SHAP Visualization -->
+    <div class="shap-card" id="shapCard" style="display:none">
+      <div class="card-title">SHAP Feature Impact</div>
+      <div class="shap-container" id="shapContainer"></div>
+    </div>
+
+    <!-- Red Flags -->
+    <div class="flags-card" id="flagsCard" style="display:none">
+      <div class="card-title">⚠️ Indicators Detected</div>
+      <ul class="flags-list" id="flagsList"></ul>
+    </div>
+
+    <!-- Gemini -->
+    <div class="gemini-card">
+      <div class="gemini-header">
+        <span class="gemini-chip">✨ Vertex AI Gemini</span>
+        <span class="gemini-sub">AI Explanation</span>
+      </div>
+      <p class="gemini-text" id="geminiText">Waiting for fusion engine results...</p>
+    </div>
+
+  </div><!-- /panelCurrent -->
+
+  <!-- ══════════════════════════════════════════════
+       TAB 2: HISTORY
+  ══════════════════════════════════════════════════ -->
+  <div id="panelHistory" class="panel">
+    <div class="history-header">
+      <div class="card-title">Recent Analyses</div>
+      <button class="clear-btn" id="clearBtn">Clear</button>
+    </div>
+    <div id="historyList" class="history-list">
+      <div class="history-empty">No analyses yet. Browse some websites!</div>
+    </div>
+  </div>
+
+  <!-- ── FOOTER ─────────────────────────────────── -->
+  <footer class="footer">
+    PhishGuard Multi-Modal AI · Capstone Project
+  </footer>
+
+</div><!-- /app -->
+<script src="popup.js"></script>
+</body>
+</html>

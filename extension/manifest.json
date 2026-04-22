@@ -1,0 +1,26 @@
+{
+  "manifest_version": 3,
+  "name": "PhishGuard Multi-Modal AI",
+  "version": "2.0",
+  "description": "Real-time Multi-Modal Phishing Detection powered by AI Fusion Engine with URL, Text, and Visual analysis.",
+  "permissions": [
+    "activeTab",
+    "scripting",
+    "storage",
+    "tabs"
+  ],
+  "host_permissions": [
+    "<all_urls>"
+  ],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "PhishGuard AI Analysis",
+    "default_badge_text": ""
+  },
+  "content_security_policy": {
+    "extension_pages": "script-src 'self'; object-src 'self'"
+  }
+}
