@@ -336,16 +336,25 @@ def _rule_text(text: str) -> dict:
 
 
 # ─── Audio rule-based (Vishing / Deepfake Voice Simulation) ───────────────────
-def _rule_audio(url: str, text: str) -> dict:
+def _rule_audio(url: str, text: str, dom_features: dict) -> dict:
     import numpy as np
     risk   = 0.08
     flags  = []
     url_l  = url.lower()
     text_l = text.lower()
     
-    if 'urgent' in text_l or 'otp' in text_l or 'call this number' in text_l:
-        risk += 0.25; flags.append("Synthetic voice urgency pattern detected")
-        
+    # Analyze text for urgency
+    has_urgency = "urgent" in text_l or "otp" in text_l or "call this number" in text_l
+    
+    if dom_features.get('has_audio'):
+        risk += 0.60
+        flags.append("Background audio synthesis patterns detected")
+    elif dom_features.get('has_video') and has_urgency:
+        risk += 0.45
+        flags.append("Anomalous audio track within video stream")
+    
+    if has_urgency:
+        risk += 0.20
     url_hash = int(hashlib.md5(url.encode()).hexdigest()[:6], 16) / 16777215.0
     risk = float(np.clip(risk + (url_hash-0.5)*0.15, 0.05, 0.95))
     emb  = np.random.randn(64) * 0.1
@@ -357,16 +366,25 @@ def _rule_audio(url: str, text: str) -> dict:
             'embedding': emb, 'indicators': flags, 'method': 'rule'}
 
 # ─── Video rule-based (Deepfake Face/Behavior Simulation) ─────────────────────
-def _rule_video(url: str, text: str) -> dict:
+def _rule_video(url: str, text: str, dom_features: dict) -> dict:
     import numpy as np
     risk   = 0.05
     flags  = []
-    url_hash = int(hashlib.sha256(url.encode()).hexdigest()[:4], 16) / 65535.0
-    risk = float(np.clip(risk + (url_hash-0.5)*0.20, 0.02, 0.98))
     
-    if risk > 0.65:
+    url_lower = url.lower()
+    # Still check keywords as a secondary signal
+    if "video" in url_lower or "celeb-df" in url_lower or "deepfake" in url_lower:
+        risk += 0.30
+        
+    if dom_features.get('has_video'):
+        risk += 0.65
+        
+    url_hash = int(hashlib.sha256(url.encode()).hexdigest()[:4], 16) / 65535.0
+    risk = float(np.clip(risk + (url_hash-0.5)*0.10, 0.02, 0.98))
+    
+    if risk > 0.80:
         flags.append("Facial artifact inconsistency detected (Deepfake Video)")
-    elif risk > 0.45:
+    elif risk > 0.50:
         flags.append("Lip-sync anomalies detected in media stream")
         
     emb  = np.random.randn(64) * 0.1
@@ -377,10 +395,15 @@ def _rule_video(url: str, text: str) -> dict:
 
 
 # ─── Image rule-based (no training needed — uses pre-trained ResNet18 concepts) ─
-def _rule_image(url: str) -> dict:
+def _rule_image(url: str, dom_features: dict) -> dict:
     url_l  = url.lower()
     risk   = 0.10
     flags  = []
+    
+    if dom_features.get('num_images', 0) > 0 and dom_features.get('has_password'):
+        risk += 0.70
+        flags.append("Visual impersonation combined with credential harvesting input")
+        
     try:
         p     = urlparse(url)
         host  = (p.hostname or "").lower()
@@ -499,17 +522,17 @@ def analyze_text(text: str) -> dict:
     return _rule_text(text)
 
 
-def analyze_image(url: str) -> dict:
+def analyze_image(url: str, dom_features: dict = None) -> dict:
     """Image/visual analysis — rule-based (uses ResNet18 concepts)."""
-    return _rule_image(url)
+    return _rule_image(url, dom_features or {})
 
 
 
-def analyze_audio(url: str, text: str) -> dict:
-    return _rule_audio(url, text)
+def analyze_audio(url: str, text: str, dom_features: dict = None) -> dict:
+    return _rule_audio(url, text, dom_features or {})
 
-def analyze_video(url: str, text: str) -> dict:
-    return _rule_video(url, text)
+def analyze_video(url: str, text: str, dom_features: dict = None) -> dict:
+    return _rule_video(url, text, dom_features or {})
 
 
 # ─── Gemini Explanation Generator ────────────────────────────────────────────
@@ -611,6 +634,7 @@ def analyze():
     data = request.get_json(silent=True) or {}
     url  = data.get('url', '').strip()
     text = data.get('text', '').strip()
+    dom_features = data.get('dom_features', {})
 
     if (not url or
         url.startswith(('chrome://','edge://','about:','chrome-extension://','moz-extension://'))):
@@ -621,9 +645,9 @@ def analyze():
 
     u_res   = analyze_url(url)
     t_res   = analyze_text(text)
-    img_res = analyze_image(url)
-    aud_res = analyze_audio(url, text)
-    vid_res = analyze_video(url, text)
+    img_res = analyze_image(url, dom_features)
+    aud_res = analyze_audio(url, text, dom_features)
+    vid_res = analyze_video(url, text, dom_features)
 
     print(f"  URL  [{u_res['method']:4}]: {u_res['risk_score']:.2%}")
     print(f"  Text [{t_res['method']:4}]: {t_res['risk_score']:.2%}")
