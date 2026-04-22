@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PhishGuard Demo Links</title>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #0f172a; color: #f8fafc; padding: 40px; }
+        h1 { color: #38bdf8; text-align: center; }
+        .container { max-width: 800px; margin: 0 auto; }
+        .card { background: #1e293b; padding: 20px; margin-bottom: 20px; border-radius: 8px; border: 1px solid #334155; }
+        .card a { display: block; font-size: 20px; color: #60a5fa; text-decoration: none; margin-bottom: 10px; font-weight: bold; }
+        .card a:hover { text-decoration: underline; color: #93c5fd; }
+        .card p { color: #94a3b8; line-height: 1.5; }
+        .tag { display: inline-block; padding: 4px 8px; border-radius: 4px; font-size: 12px; font-weight: bold; margin-right: 8px; }
+        .tag.url { background: #3b82f6; color: white; }
+        .tag.text { background: #10b981; color: white; }
+        .tag.image { background: #f59e0b; color: white; }
+        .tag.video { background: #8b5cf6; color: white; }
+        .tag.audio { background: #ec4899; color: white; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>PhishGuard Demonstration Links</h1>
+        <p style="text-align: center; color: #94a3b8; margin-bottom: 40px;">
+            Open these links while the PhishGuard extension is active. The extension will automatically analyze the pages in real-time.
+        </p>
+
+        <div class="card">
+            <a href="paypal-secure-login-verify-account.html" target="_blank">1. Traditional Phishing (Credential Harvesting)</a>
+            <div>
+                <span class="tag url">URL</span> <span class="tag text">TEXT</span> <span class="tag image">IMAGE</span>
+            </div>
+            <p>Simulates a fraudulent banking/payment login page. Triggers URL anomalies (IP host, brand impersonation in path, keywords), manipulative text (urgent, verify, suspended), and visual brand impersonation.</p>
+        </div>
+
+        <div class="card">
+            <a href="urgent-video-login-75.html" target="_blank">2. Deepfake Video Phishing</a>
+            <div>
+                <span class="tag url">URL</span> <span class="tag text">TEXT</span> <span class="tag video">VIDEO</span>
+            </div>
+            <p>Simulates an urgent CEO message via a deepfake video prompting for immediate action. Triggers high-risk video anomalies alongside urgent textual context and manipulative framing.</p>
+        </div>
+
+        <div class="card">
+            <a href="secure-voice-otp-verify-82.html" target="_blank">3. AI Voice Scam (Vishing)</a>
+            <div>
+                <span class="tag url">URL</span> <span class="tag text">TEXT</span> <span class="tag audio">AUDIO</span>
+            </div>
+            <p>Simulates a synthetic voice scam asking the user to provide their OTP to resolve a compromised account. Triggers audio anomaly detection based on spectral frequencies and textual urgency patterns.</p>
+        </div>
+
+        <div class="card">
+            <a href="urgent-video-celeb-df-login-75.html" target="_blank">4. Real Celeb-DF Deepfake Video</a>
+            <div>
+                <span class="tag url">URL</span> <span class="tag text">TEXT</span> <span class="tag video">VIDEO</span>
+            </div>
+            <p>Embeds a real deepfake video from the Celeb-DF dataset wrapped in a simulated corporate phishing scenario.</p>
+        </div>
+
+        <div class="card">
+            <a href="1and1-ionos-login-verify-account.html" target="_blank">5. Real 1&1 Ionos Phishing Page (Extracted)</a>
+            <div>
+                <span class="tag url">URL</span> <span class="tag text">TEXT</span> <span class="tag image">IMAGE</span>
+            </div>
+            <p>A real extracted phishing page targeting 1&1 Ionos credentials. Shows how the system reacts to raw, genuine phishing HTML and URLs.</p>
+        </div>
+
+        <div class="card">
+            <a href="email_0002.html" target="_blank">6. Legitimate Email Example 1 (Ham)</a>
+            <div>
+                <span class="tag text">TEXT</span>
+            </div>
+            <p>A genuine email from the EasyHam dataset to demonstrate the system properly classifying benign text as low risk.</p>
+        </div>
+
+        <div class="card">
+            <a href="email_0003.html" target="_blank">7. Legitimate Email Example 2 (Ham)</a>
+            <div>
+                <span class="tag text">TEXT</span>
+            </div>
+            <p>Another genuine email from the EasyHam dataset.</p>
+        </div>
+
+        <div class="card">
+            <a href="email_0004.html" target="_blank">8. Legitimate Email Example 3 (Ham)</a>
+            <div>
+                <span class="tag text">TEXT</span>
+            </div>
+            <p>Another genuine email from the EasyHam dataset.</p>
+        </div>
+    </div>
+</body>
+</html>

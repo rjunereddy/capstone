@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Urgent Video Announcement</title>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #111; color: white; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
+        .video-container { background: #222; padding: 30px; border-radius: 12px; max-width: 600px; text-align: center; border: 1px solid #444; }
+        h2 { color: #facc15; margin-top: 0; }
+        p { color: #ccc; line-height: 1.6; text-align: left; }
+        .urgent-text { color: #ef4444; font-weight: bold; }
+        .btn { display: inline-block; background: #eab308; color: #111; padding: 12px 24px; text-decoration: none; font-weight: bold; border-radius: 4px; margin-top: 15px; }
+        .btn:hover { background: #ca8a04; }
+        video { width: 100%; border-radius: 8px; margin-bottom: 20px; outline: none; }
+    </style>
+</head>
+<body>
+    <div class="video-container">
+        <h2>Corporate Announcement: Q3 Strategy</h2>
+        
+        <video controls autoplay muted loop>
+            <source src="id0_id9_0008.mp4" type="video/mp4">
+            Your browser does not support the video tag.
+        </video>
+
+        <p>
+            <span class="urgent-text">URGENT:</span> Please watch the above mandatory corporate update.
+        </p>
+        <p>
+            To confirm you have received this message, you must verify your employee identity. Please act now to prevent your corporate access from being suspended. You will need your one time password (OTP) to proceed.
+        </p>
+        <a href="#" class="btn" onclick="alert('Demo action prevented.');">Verify Identity via OTP</a>
+    </div>
+</body>
+</html>

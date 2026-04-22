@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Voice Verification Required</title>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f0fdf4; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
+        .audio-container { background: white; padding: 40px; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); max-width: 500px; text-align: center; border-top: 4px solid #22c55e; }
+        .icon { font-size: 48px; color: #22c55e; margin-bottom: 20px; }
+        h2 { color: #166534; margin-top: 0; }
+        p { color: #475569; line-height: 1.6; text-align: left; }
+        .audio-player { background: #f8fafc; padding: 15px; border-radius: 8px; border: 1px solid #e2e8f0; margin: 20px 0; color: #64748b; font-style: italic; }
+        .warning { color: #b91c1c; font-weight: bold; background: #fee2e2; padding: 10px; border-radius: 6px; }
+    </style>
+</head>
+<body>
+    <div class="audio-container">
+        <div class="icon">📞</div>
+        <h2>Automated Security Call</h2>
+        <div class="audio-player">
+            ▶ [ Simulated Audio: Synthetic AI Voice Requesting OTP ]
+        </div>
+        <p>
+            Please listen to the automated message above from our fraud department. We have detected highly unusual activity on your banking profile.
+        </p>
+        <p class="warning">
+            URGENT: Do not ignore this message.
+        </p>
+        <p>
+            To prevent your funds from being frozen, you must verify your identity. Please call this number: 1-800-FAKE-BANK or enter your OTP below as instructed by the voice prompt.
+        </p>
+        <input type="text" placeholder="Enter OTP Here" style="width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; margin-bottom: 15px;">
+        <button style="width: 100%; background: #16a34a; color: white; border: none; padding: 14px; border-radius: 8px; font-weight: bold; cursor: pointer;">Submit Verification</button>
+    </div>
+</body>
+</html>
