@@ -634,8 +634,12 @@ def analyze():
     # Align embeddings when high-risk agreement (boosts fusion multiplier)
     if u_res['risk_score'] > 0.65 and t_res['risk_score'] > 0.65:
         shared = np.ones(64) * 0.88
-        u_res['embedding'][:64]   = shared
-        t_res['embedding'][:64]   = shared
+        min_u = min(64, len(u_res['embedding']))
+        u_res['embedding'][:min_u] = shared[:min_u]
+        
+        min_t = min(64, len(t_res['embedding']))
+        t_res['embedding'][:min_t] = shared[:min_t]
+        
         img_res['embedding'][:64] = shared
         aud_res['embedding'][:64] = shared
         vid_res['embedding'][:64] = shared
