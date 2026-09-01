@@ -1,0 +1,33 @@
+
+--- Slide 1 ---
+UE23CS320B – Capstone Project Phase – 2 SEMESTER - VI END SEMESTER ASSESSMENT Project Title   :  Project ID       :      Project Guide :                  Project Team  : NAME1_NAME2_NAME3_NAME41
+
+--- Slide 2 ---
+Abstract and scope.Suggestions from phase-2 review 2Implementation details (Technical)Results and demoProject Progress Plan for Phase 3 and Phase 4ReferencesAny other InformationOutlineNAME1_NAME2_NAME3_NAME42Title of the Project
+
+--- Slide 3 ---
+Well defined problem statement.Provide a basic introduction of the project and also an overview of scope it entails.Abstract and ScopeNAME1_NAME2_NAME3_NAME43Title of the Project
+
+--- Slide 4 ---
+Provide the suggestions and remarks given by the panel members. Mention the feasibility on the same showing the progress.Suggestions from Phase 2- review 2NAME1_NAME2_NAME3_NAME44Title of the Project
+
+--- Slide 5 ---
+Implementation DetailsDetailed Explanation of the methodology, code, benchmarkingNAME1_NAME2_NAME3_NAME45Title of the Project
+
+--- Slide 6 ---
+Results and demoTabular/visual, performance metricsNAME1_NAME2_NAME3_NAME46Title of the Project
+
+--- Slide 7 ---
+Individual contributionContribution of individual member of the team for Phase-2 ESANAME1_NAME2_NAME3_NAME47Title of the Project
+
+--- Slide 8 ---
+Project Progress Plan for Phase 3 and Phase 4Represent Gantt chart indicating timelines.NAME1_NAME2_NAME3_NAME48Title of the Project
+
+--- Slide 9 ---
+ReferencesProvide references pertaining to your research according to IEEE format.Example:G. Eason, B. Noble, and I. N. Sneddon, “On certain integrals of Lipschitz-Hankel type involving products of Bessel functions,” Phil. Trans. Roy. Soc. London, vol. A247, pp. 529–551, April 1955. (references)NAME1_NAME2_NAME3_NAME49Title of the Project
+
+--- Slide 10 ---
+Any other informationProvide any other information you wish to add on. Note: Changes can be made in the template, with the consent of the guide for inclusion of any other information.NAME1_NAME2_NAME3_NAME410Title of the Project
+
+--- Slide 11 ---
+Thank YouNAME1_NAME2_NAME3_NAME411
