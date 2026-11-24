@@ -113,14 +113,60 @@ scenarios = [
         "expect_high": False, "max_score": 0.25
     },
     {
+        "name": "Authentic Google Login Portal (Accounts Google)",
+        "payload": {
+            "url": "https://accounts.google.com/v3/signin/identifier?authuser=0&continue=https://mail.google.com",
+            "title": "Sign in - Google Accounts",
+            "text": "Sign in to continue to Gmail. Enter your email or phone number. Next. Forgot email?",
+            "dom_features": {"has_password": True, "num_images": 2}
+        },
+        "expect_high": False, "max_score": 0.20
+    },
+    {
+        "name": "Authentic Gmail Application (Mail Google)",
+        "payload": {
+            "url": "https://mail.google.com/mail/u/1/#inbox",
+            "title": "Inbox (12) - user@gmail.com - Gmail",
+            "text": "Primary Promotions Social. Starred Snoozed Sent Drafts Meet New meeting.",
+            "dom_features": {"num_images": 5}
+        },
+        "expect_high": False, "max_score": 0.20
+    },
+    {
         "name": "Legitimate Banking Portal (HDFC Bank)",
         "payload": {"url": "https://www.hdfcbank.com/personal/ways-to-bank/online-banking", "text": "Welcome to HDFC Bank NetBanking. Log in to your personal account securely."},
         "expect_high": False, "max_score": 0.30
     },
     {
-        "name": "Legitimate Video Platform (YouTube)",
-        "payload": {"url": "https://www.youtube.com/watch?v=dQw4w9WgXcQ", "text": "Official music video with standard streaming playback.", "dom_features": {"has_video": True}},
+        "name": "YouTube Search Results (Deepfake Query Catalog)",
+        "payload": {
+            "url": "https://www.youtube.com/results?search_query=tom+cruiess+deepfake",
+            "title": "tom cruiess deepfake - YouTube",
+            "text": "Filters Search results for tom cruiess deepfake. Watch latest uploads, shorts, and channels.",
+            "dom_features": {"has_video": True}
+        },
+        "expect_high": False, "max_score": 0.20
+    },
+    {
+        "name": "Legitimate Video Platform (Genuine Video)",
+        "payload": {
+            "url": "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+            "title": "Rick Astley - Never Gonna Give You Up (Official Music Video)",
+            "text": "Official music video with standard streaming playback.",
+            "dom_features": {"has_video": True}
+        },
         "expect_high": False, "max_score": 0.25
+    },
+    # 2. Deepfake on Video Platform
+    {
+        "name": "YouTube AI Deepfake Video (Celeb-DF Model Detection)",
+        "payload": {
+            "url": "https://www.youtube.com/watch?v=1yiOVUbsPcM",
+            "title": "Very realistic Tom Cruise Deepfake | AI Tom Cruise",
+            "text": "Very realistic Tom Cruise Deepfake | AI Tom Cruise. Watch this amazing deepfake created using artificial intelligence and faceswap technology.",
+            "dom_features": {"has_video": True, "num_images": 4}
+        },
+        "expect_high": True, "min_score": 0.65
     },
     # 2. Phishing attacks
     {

@@ -1,14 +1,16 @@
 // PhishGuard Extension — background.js (Service Worker)
-// Monitors tabs, sends to analysis server, updates badge + history
+// Monitors tabs, detects Single-Page App navigations, extracts rich metadata,
+// queries local/Render server with fallback, updates badges, and serves popup requests.
 
 'use strict';
 
 const RENDER_URL = 'https://capstone-3b05.onrender.com';
 const LOCAL_URL = 'http://127.0.0.1:5000';
-const SERVER_URL = `${RENDER_URL}/analyze`;
-const HEALTH_URL = `${RENDER_URL}/health`;
 const HISTORY_KEY = 'phishguard_history';
 const MAX_HISTORY = 50;
+
+// Track pending analyses to prevent duplicate rapid requests on SPAs
+const pendingTabs = new Map();
 
 // ── STARTUP ───────────────────────────────────────────────
 chrome.runtime.onInstalled.addListener(() => {
@@ -23,84 +25,141 @@ function checkServer() {
     .then(r => r.json())
     .then(d => console.log(`[PhishGuard] Local Server online — ${d.service || d.system} v${d.version}`))
     .catch(() => {
-      fetch(HEALTH_URL, { signal: AbortSignal.timeout(5000) })
+      fetch(`${RENDER_URL}/health`, { signal: AbortSignal.timeout(8000) })
         .then(r => r.json())
         .then(d => console.log(`[PhishGuard] Cloud Server online — ${d.service || d.system} v${d.version}`))
-        .catch(() => console.warn('[PhishGuard] Cloud and Local servers offline — start server.py or wake Render'));
+        .catch(() => console.warn('[PhishGuard] Cloud and Local servers offline'));
     });
 }
 
-// ── TAB ANALYSIS ─────────────────────────────────────────
-chrome.tabs.onUpdated.addListener(async (tabId, changeInfo, tab) => {
-  if (changeInfo.status !== 'complete') return;
-  if (!tab.url) return;
-  if (!tab.url.startsWith('http://') && !tab.url.startsWith('https://') && !tab.url.startsWith('file://')) return;
+// ── CORE TAB ANALYSIS ─────────────────────────────────────
+async function analyzeTab(tabId, tab) {
+  if (!tab || !tab.url) return { error: true, message: 'No URL provided' };
+  if (!tab.url.startsWith('http://') && !tab.url.startsWith('https://') && !tab.url.startsWith('file://')) {
+    return { status: 'ignored' };
+  }
 
-  // Give DOM time to render
-  await sleep(900);
+  // Prevent duplicate concurrent requests for the exact same URL within 1.5 seconds
+  const existing = pendingTabs.get(tabId);
+  if (existing && existing.url === tab.url && (Date.now() - existing.time) < 1500) {
+    const cached = await chrome.storage.local.get([tabId.toString()]);
+    if (cached[tabId.toString()]) return cached[tabId.toString()];
+  }
+  pendingTabs.set(tabId, { url: tab.url, time: Date.now() });
 
-  // Extract visible page text via scripting API
+  // Brief pause for client-side frameworks to render title/DOM
+  await sleep(650);
+
+  // Extract visible page text, titles, headings, and DOM features
+  let pageTitle = tab.title || '';
   let pageText = '';
   let domFeatures = {};
+
   try {
     const tabCheck = await chrome.tabs.get(tabId).catch(() => null);
-    if (!tabCheck) return;
+    if (!tabCheck) return { error: true, message: 'Tab closed' };
 
     const res = await chrome.scripting.executeScript({
       target: { tabId },
       func: () => {
         try {
-          let t = document.body.innerText || document.body.textContent || '';
-          let textContent = t.replace(/\s+/g, ' ').trim().substring(0, 3500);
+          const docTitle = document.title || '';
+          const metaTitle = document.querySelector('meta[name="title"]')?.content ||
+                            document.querySelector('meta[property="og:title"]')?.content || '';
+          const metaDesc = document.querySelector('meta[name="description"]')?.content ||
+                           document.querySelector('meta[property="og:description"]')?.content || '';
+          
+          // YouTube & media specific selectors
+          const ytTitle = document.querySelector('h1.ytd-watch-metadata yt-formatted-string')?.textContent ||
+                          document.querySelector('#title h1')?.textContent ||
+                          document.querySelector('h1.title')?.textContent || '';
 
-          let features = {
+          // Key page headings
+          const headings = Array.from(document.querySelectorAll('h1, h2, h3'))
+            .map(h => h.textContent.trim())
+            .filter(Boolean)
+            .slice(0, 10)
+            .join(' | ');
+
+          // Body text sample
+          const bodyText = (document.body.innerText || document.body.textContent || '')
+            .replace(/\s+/g, ' ')
+            .trim()
+            .substring(0, 3000);
+
+          const fullText = [docTitle, metaTitle, ytTitle, metaDesc, headings, bodyText]
+            .filter(Boolean)
+            .join(' ')
+            .replace(/\s+/g, ' ')
+            .trim()
+            .substring(0, 4500);
+
+          const features = {
             has_video: document.querySelectorAll('video').length > 0,
             has_audio: document.querySelectorAll('audio').length > 0,
             num_images: document.querySelectorAll('img').length,
             has_password: document.querySelectorAll('input[type="password"]').length > 0
           };
-          return { text: textContent, features: features };
-        } catch { return { text: '', features: {} }; }
+
+          return { title: ytTitle || docTitle || metaTitle, text: fullText, features: features };
+        } catch {
+          return { title: '', text: '', features: {} };
+        }
       },
     });
+
     if (res?.[0]?.result) {
-      pageText = res[0].result.text;
-      domFeatures = res[0].result.features;
+      if (res[0].result.title) pageTitle = res[0].result.title;
+      pageText = res[0].result.text || '';
+      domFeatures = res[0].result.features || {};
     }
   } catch (e) {
-    console.warn(`[PhishGuard] Script injection failed for tab ${tabId}:`, e.message);
+    console.warn(`[PhishGuard] Script injection notice for tab ${tabId}:`, e.message);
+  }
+
+  // Prepend tab.title if not already present
+  if (tab.title && !pageText.toLowerCase().includes(tab.title.toLowerCase().substring(0, 20))) {
+    pageText = `${tab.title}. ${pageText}`.trim();
   }
 
   // Send to PhishGuard server (Local Server Primary with Cloud Fallback)
   try {
     let res;
+    const payload = JSON.stringify({
+      url: tab.url,
+      title: pageTitle,
+      text: pageText,
+      dom_features: domFeatures
+    });
+
     try {
       res = await fetch(`${LOCAL_URL}/analyze`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ url: tab.url, text: pageText, dom_features: domFeatures }),
-        signal: AbortSignal.timeout(2500),
+        body: payload,
+        signal: AbortSignal.timeout(2000),
       });
       if (!res.ok) throw new Error(`Local HTTP ${res.status}`);
     } catch (localErr) {
-      console.log(`[PhishGuard] Local server unavailable, trying cloud (${localErr.message})...`);
-      res = await fetch(SERVER_URL, {
+      console.log(`[PhishGuard] Local server unavailable, routing to Render cloud...`);
+      res = await fetch(`${RENDER_URL}/analyze`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ url: tab.url, text: pageText, dom_features: domFeatures }),
-        signal: AbortSignal.timeout(10000),
+        body: payload,
+        signal: AbortSignal.timeout(35000), // Render free tier wake-up tolerance
       });
       if (!res.ok) throw new Error(`Cloud HTTP ${res.status}`);
     }
 
     const data = await res.json();
-    if (data.status === 'ignored') return;
+    if (data.status === 'ignored') return data;
 
-    // Verify tab is still open before updating badge or injecting UI
+    // Verify tab is still open
     const currentTab = await chrome.tabs.get(tabId).catch(() => null);
-    if (!currentTab) return;
+    if (!currentTab) return data;
 
-    // Save per-tab result for popup
+    // Save per-tab result for popup (including active URL to verify sync)
+    data.url = tab.url;
     await chrome.storage.local.set({ [tabId.toString()]: data });
 
     // Append to global history
@@ -120,7 +179,7 @@ chrome.tabs.onUpdated.addListener(async (tabId, changeInfo, tab) => {
 
     console.log(`[PhishGuard] ${tab.url.substring(0, 60)} → ${(score * 100).toFixed(0)}% ${data.risk_level}`);
 
-    // INJECT WARNING OVERLAY ONLY FOR CONFIRMED DANGEROUS ATTACKS (Never on Safe sites)
+    // INJECT WARNING OVERLAY ONLY FOR CONFIRMED DANGEROUS ATTACKS (Never on verified domains)
     const isSafeDomain = ['google.com', 'accounts.google.com', 'youtube.com', 'microsoft.com', 'apple.com', 'github.com'].some(d => (tab.url || '').toLowerCase().includes(d));
     const isSafeVerdict = data.risk_level === 'SAFE' || data.risk_level === 'LOW RISK' || score < 0.40;
     
@@ -160,10 +219,51 @@ chrome.tabs.onUpdated.addListener(async (tabId, changeInfo, tab) => {
       }).catch(err => console.warn('[PhishGuard] Failed to inject warning overlay:', err));
     }
 
+    return data;
+
   } catch (err) {
     console.warn('[PhishGuard] Analysis failed:', err.message);
-    await chrome.storage.local.set({ [tabId.toString()]: { error: true, url: tab.url } });
+    const errData = { error: true, url: tab.url, message: err.message };
+    await chrome.storage.local.set({ [tabId.toString()]: errData });
     setBadge(tabId, '?', '#6B7280');
+    return errData;
+  }
+}
+
+// ── EVENT LISTENERS ───────────────────────────────────────
+
+// 1. Tab update listener (fires on full reload AND client-side SPA URL changes)
+chrome.tabs.onUpdated.addListener(async (tabId, changeInfo, tab) => {
+  if (changeInfo.status !== 'complete' && !changeInfo.url) return;
+  if (!tab || !tab.url) return;
+  analyzeTab(tabId, tab);
+});
+
+// 2. Tab switched / activated (ensures popup is accurate when user switches tabs)
+chrome.tabs.onActivated.addListener(async (activeInfo) => {
+  try {
+    const tab = await chrome.tabs.get(activeInfo.tabId);
+    if (!tab || !tab.url) return;
+    if (!tab.url.startsWith('http://') && !tab.url.startsWith('https://') && !tab.url.startsWith('file://')) return;
+    const stored = await chrome.storage.local.get([activeInfo.tabId.toString()]);
+    const tabData = stored[activeInfo.tabId.toString()];
+    if (!tabData || tabData.url !== tab.url) {
+      analyzeTab(activeInfo.tabId, tab);
+    }
+  } catch {}
+});
+
+// 3. Runtime messaging (allows popup.js to request instant on-demand analysis)
+chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+  if (request.action === 'analyzeNow' && request.tabId) {
+    chrome.tabs.get(request.tabId).then(tab => {
+      if (tab) {
+        analyzeTab(request.tabId, tab).then(res => sendResponse(res));
+      } else {
+        sendResponse({ error: true, message: 'Tab not accessible' });
+      }
+    }).catch(err => sendResponse({ error: true, message: err.message }));
+    return true; // Keep message channel open for async response
   }
 });
 
@@ -174,7 +274,7 @@ async function appendHistory(entry) {
       const items = result[HISTORY_KEY] || [];
       // Avoid duplicate consecutive same URL
       if (items.length > 0 && items[0].url === entry.url) {
-        items[0] = entry;   // update in place
+        items[0] = entry; // update in place
       } else {
         items.unshift(entry);
       }
@@ -187,6 +287,7 @@ async function appendHistory(entry) {
 // ── CLEANUP ───────────────────────────────────────────────
 chrome.tabs.onRemoved.addListener((tabId) => {
   chrome.storage.local.remove(tabId.toString());
+  pendingTabs.delete(tabId);
 });
 
 // ── UTILS ─────────────────────────────────────────────────

@@ -66,15 +66,21 @@ document.addEventListener('DOMContentLoaded', () => {
     chrome.storage.local.get([tab.id.toString()], (result) => {
       const data = result[tab.id.toString()];
 
-      if (data && !data.error && data.final_risk_score !== undefined) {
+      if (data && !data.error && data.final_risk_score !== undefined && (!data.url || data.url === tab.url)) {
         setStatus('online', 'Protected');
         renderAnalysis(data);
-      } else if (data && data.error) {
-        setStatus('offline', 'Offline');
-        renderOffline();
       } else {
         setStatus('busy', 'Analyzing');
         renderWaiting();
+        chrome.runtime.sendMessage({ action: 'analyzeNow', tabId: tab.id }, (response) => {
+          if (response && !response.error && response.final_risk_score !== undefined) {
+            setStatus('online', 'Protected');
+            renderAnalysis(response);
+          } else if (response && response.error) {
+            setStatus('offline', 'Offline');
+            renderOffline(response.message);
+          }
+        });
       }
     });
   });
