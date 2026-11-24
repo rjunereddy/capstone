@@ -113,8 +113,11 @@ chrome.tabs.onUpdated.addListener(async (tabId, changeInfo, tab) => {
 
     console.log(`[PhishGuard] ${tab.url.substring(0, 60)} → ${(score * 100).toFixed(0)}% ${data.risk_level}`);
 
-    // INJECT WARNING OVERLAY FOR MALICIOUS PAGES
-    if (score >= 0.60) {
+    // INJECT WARNING OVERLAY ONLY FOR CONFIRMED DANGEROUS ATTACKS (Never on Safe sites)
+    const isSafeDomain = ['google.com', 'accounts.google.com', 'youtube.com', 'microsoft.com', 'apple.com', 'github.com'].some(d => (tab.url || '').toLowerCase().includes(d));
+    const isSafeVerdict = data.risk_level === 'SAFE' || data.risk_level === 'LOW RISK' || score < 0.40;
+    
+    if (score >= 0.70 && !isSafeVerdict && !isSafeDomain) {
       chrome.scripting.executeScript({
         target: { tabId },
         func: (riskScore, explanation) => {

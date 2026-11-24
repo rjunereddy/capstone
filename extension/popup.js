@@ -165,7 +165,6 @@ function runSimulation(type) {
       renderOffline(err.message || String(err));
     });
 }
-}
 
 // ── MAIN RENDER ───────────────────────────────────────────
 function renderAnalysis(data) {
