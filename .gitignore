@@ -1,0 +1,17 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Large model training checkpoints and weights
+results/
+*.safetensors
+*.pt
+*.pth
+*.bin
+
+# Temporary and office lock files
+~$*
+*.tmp
+.DS_Store
+Thumbs.db

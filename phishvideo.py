@@ -270,6 +270,7 @@ class VideoAnomalyDetector:
         X_scaled = self.scaler.fit_transform(X)
         
         print("   Generating embeddings...")
+        self.pca = PCA(n_components=min(EMBEDDING_DIM, X.shape[1]))
         X_embedding = self.pca.fit_transform(X_scaled)
         explained_var = self.pca.explained_variance_ratio_.sum()
         print(f"   PCA explained variance: {explained_var:.2%}")
@@ -327,6 +328,8 @@ class VideoAnomalyDetector:
         
         X_pca = self.pca.transform(X_scaled)
         embedding = X_pca[0] if len(X_pca) > 0 else np.zeros(EMBEDDING_DIM)
+        if len(embedding) < EMBEDDING_DIM:
+            embedding = np.pad(embedding, (0, EMBEDDING_DIM - len(embedding)), 'constant')
         
         if risk_score >= 0.8:
             risk_level, risk_text, rec = "🔴 CRITICAL", "CRITICAL", "⚠️ Video shows strong signs of manipulation!"

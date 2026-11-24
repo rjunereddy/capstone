@@ -1,0 +1,155 @@
+========================================
+Presentation: c:\Users\malli\capstone\final ppt.pptx
+Total Slides: 18
+========================================
+
+--- Slide 1 ---
+UE23CS320B – Capstone Project Phase – 2
+
+ SEMESTER - VI 
+END SEMESTER ASSESSMENT
+Project Title   : PhishGuard AI - Local Browser Extension for Real-Time Phishing & Deepfake Detection Using a Multi-Modal, Correlation-Aware Pipeline 
+Project ID       : PW26_RR_06     
+Project Guide : Dr. Roopa Ravish                 
+Project Team  :  Mallikarjun Reddy 
+Navajyoth
+Pranav G M
+		       N Viharika
+Mallikarjun_Navajyoth_Pranav_Viharika
+
+--- Slide 2 ---
+Abstract and scope.
+Suggestions from phase-2 review 2
+Implementation details (Technical)
+Results and demo
+Project Progress Plan for Phase 3 and Phase 4
+References
+Any other Information
+Outline
+NAME1_NAME2_NAME3_NAME4
+PhishGuard AI - Local Browser Extension for Real-Time Phishing & Deepfake Detection Using a Multi-Modal, Correlation-Aware Pipeline
+
+--- Slide 3 ---
+Problem: Single-modality phishing detection (e.g., just checking URLs) fails against modern, multi-layered attacks like deepfakes and visually deceptive clones.
+
+Solution: A Multi-Modal Phishing Detection System that mathematically fuses Text, URL, Visual (DOM), and Audio/Video analysis.
+
+Scope: Real-time web analysis via a Manifest V3 Browser Extension, backed by a Python/Flask Cloud Fusion Engine and Vertex AI Gemini for human-readable threat explanations.
+Abstract and Scope
+Mallikarjun_Navajyoth_Pranav_Viharika
+PhishGuard AI - Local Browser Extension for Real-Time Phishing & Deepfake Detection Using a Multi-Modal, Correlation-Aware Pipeline
+
+--- Slide 4 ---
+*(INSERT IMAGE HERE: A professional, high-level infographic or icon set showing 4 inputs (Text, URL, Image, Video) combining into a single shield icon).*
+Abstract and Scope
+Mallikarjun_Navajyoth_Pranav_Viharika
+PhishGuard AI - Local Browser Extension for Real-Time Phishing & Deepfake Detection Using a Multi-Modal, Correlation-Aware Pipeline
+
+--- Slide 5 ---
+Suggestion 1: "Ensure the system can detect deepfake video payloads natively, rather than just relying on text/URL heuristics."
+
+Feasibility/Progress: Implemented structural DOM parsing to intercept <video> and <audio> tags. Transcoded demo videos to H.264 for seamless browser integration.
+Suggestions from Phase 2- review 2
+Mallikarjun_Navajyoth_Pranav_Viharika
+PhishGuard AI - Local Browser Extension for Real-Time Phishing & Deepfake Detection Using a Multi-Modal, Correlation-Aware Pipeline
+
+--- Slide 6 ---
+Suggestion 2: "Improve latency; cloud processing takes too long for real-time browsing."
+
+Feasibility/Progress: Shifted from cloud-rendering full screenshots to client-side DOM extraction. Average inference time reduced to <200ms on Render.com
+Suggestions from Phase 2- review 2
+Mallikarjun_Navajyoth_Pranav_Viharika
+PhishGuard AI - Local Browser Extension for Real-Time Phishing & Deepfake Detection Using a Multi-Modal, Correlation-Aware Pipeline
+
+--- Slide 7 ---
+Implementation Details
+Frontend: React-based UI & Manifest V3 Chrome Extension.
+Backend: Flask REST API deployed on Render.com.
+Machine Learning Models:
+Text: DistilBERT (Transformer-based NLP).
+URL: Ensemble statistical classifier.
+Visual/Media: DOM-structure heuristics & CNNs.
+Fusion Engine: Computes Cosine Similarity between modality embeddings. Uses Dynamic Weighting to penalize conflicting anomalies and boost correlated threats, drastically reducing false positives.
+Mallikarjun_Navajyoth_Pranav_Viharika
+PhishGuard AI - Local Browser Extension for Real-Time Phishing & Deepfake Detection Using a Multi-Modal, Correlation-Aware Pipeline
+
+--- Slide 8 ---
+Implementation Details
+Mallikarjun_Navajyoth_Pranav_Viharika
+PhishGuard AI - Local Browser Extension for Real-Time Phishing & Deepfake Detection Using a Multi-Modal, Correlation-Aware Pipeline
+
+--- Slide 9 ---
+Results and demo
+Successfully intercepted deepfake media and credential harvesting clones that bypassed standard URL blacklists.
+
+Performance: System classifies threats in ~150-200ms post-spin-up.
+
+Explainability: Vertex AI successfully translates mathematical SHAP values into readable UI explanations.
+Mallikarjun_Navajyoth_Pranav_Viharika
+PhishGuard AI - Local Browser Extension for Real-Time Phishing & Deepfake Detection Using a Multi-Modal, Correlation-Aware Pipeline
+
+--- Slide 10 ---
+Results and demo
+System Output Categorization & Action Protocols
+
+🔴 Critical (Score ≥ 0.8): Imminent threat detected. System mandates zero interaction and blocks the page.
+🟠 High Risk (Score ≥ 0.6): Very suspicious with a high probability of phishing.
+🟡 Medium Risk (Score ≥ 0.4): Mixed signals detected. Users are warned to proceed with caution and verify the source.
+🔵 Low Risk (Score ≥ 0.2): Generally safe, though minor awareness is recommended.
+🟢 Safe (Score < 0.2): No recognized threats detected by the fusion engine.
+Mallikarjun_Navajyoth_Pranav_Viharika
+PhishGuard AI - Local Browser Extension for Real-Time Phishing & Deepfake Detection Using a Multi-Modal, Correlation-Aware Pipeline
+
+--- Slide 11 ---
+Results and demo
+Mallikarjun_Navajyoth_Pranav_Viharika
+PhishGuard AI - Local Browser Extension for Real-Time Phishing & Deepfake Detection Using a Multi-Modal, Correlation-Aware Pipeline
+
+--- Slide 12 ---
+Results and demo
+Mallikarjun_Navajyoth_Pranav_Viharika
+PhishGuard AI - Local Browser Extension for Real-Time Phishing & Deepfake Detection Using a Multi-Modal, Correlation-Aware Pipeline
+
+--- Slide 13 ---
+Results and demo
+*
+Mallikarjun_Navajyoth_Pranav_Viharika
+PhishGuard AI - Local Browser Extension for Real-Time Phishing & Deepfake Detection Using a Multi-Modal, Correlation-Aware Pipeline
+
+--- Slide 14 ---
+Individual contribution
+Individual contribution
+
+Mallikarjun Reddy: Cloud Architecture (Render.com) & Flask API Deployment.
+N Viharika: Fusion Engine Logic (Cosine Similarity & Dynamic Weighting).
+Navajyoth:  Browser Extension & DOM Extraction Scripts.
+Pranav G M: Video and Image Models
+Mallikarjun_Navajyoth_Pranav_Viharika
+PhishGuard AI - Local Browser Extension for Real-Time Phishing & Deepfake Detection Using a Multi-Modal, Correlation-Aware Pipeline
+
+--- Slide 15 ---
+Project Progress Plan for Phase 3 and Phase 4
+Mallikarjun_Navajyoth_Pranav_Viharika
+PhishGuard AI - Local Browser Extension for Real-Time Phishing & Deepfake Detection Using a Multi-Modal, Correlation-Aware Pipeline
+
+--- Slide 16 ---
+References
+[1] A. Aleroud and L. Zhou, "Phishing environments, techniques, and countermeasures: A survey," Computers & Security, vol. 68, pp. 160-196, 2017.
+[2] A. K. Jain and B. B. Gupta, "A machine learning based approach for phishing detection using hyperlinks information," Journal of Ambient Intelligence and Humanized Computing, 2018.
+[3] N. Das, et al., "Deepfake detection: A comprehensive review," IEEE Access, vol. 9, pp. 152173-152190, 2021.
+Mallikarjun_Navajyoth_Pranav_Viharika
+PhishGuard AI - Local Browser Extension for Real-Time Phishing & Deepfake Detection Using a Multi-Modal, Correlation-Aware Pipeline
+
+--- Slide 17 ---
+Additional Information
+Live Demo: We have made a prototype and are prepared to demonstrate the real-time interception of a deepfake corporate announcement using our server and cloud API.
+
+https://github.com/rjunereddy/capstone
+Mallikarjun_Navajyoth_Pranav_Viharika
+PhishGuard AI - Local Browser Extension for Real-Time Phishing & Deepfake Detection Using a Multi-Modal, Correlation-Aware Pipeline
+Mallikarjun_Navajyoth_Pranav_Viharika
+
+--- Slide 18 ---
+Thank You
+Mallikarjun_Navajyoth_Pranav_Viharika
+

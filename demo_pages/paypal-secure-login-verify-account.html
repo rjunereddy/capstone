@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Verify Your Account - PayPal</title>
+    <style>
+        body { font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; background-color: #f5f7fa; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
+        .login-box { background: white; padding: 40px; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); width: 100%; max-width: 400px; text-align: center; }
+        .logo { font-size: 32px; font-weight: bold; color: #003087; margin-bottom: 20px; font-style: italic; }
+        .logo span { color: #0079C1; }
+        .alert { background: #fee2e2; color: #b91c1c; padding: 12px; border-radius: 4px; margin-bottom: 20px; font-size: 14px; text-align: left; border-left: 4px solid #ef4444; }
+        h2 { margin-top: 0; font-size: 20px; color: #333; }
+        input { width: 100%; padding: 12px; margin-bottom: 15px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; font-size: 16px; }
+        button { width: 100%; background: #0070ba; color: white; border: none; padding: 14px; border-radius: 24px; font-size: 16px; font-weight: bold; cursor: pointer; }
+        button:hover { background: #005ea6; }
+        p.footer { font-size: 12px; color: #666; margin-top: 20px; }
+    </style>
+</head>
+<body>
+    <div class="login-box">
+        <div class="logo">Pay<span>Pal</span></div>
+        <div class="alert">
+            <strong>URGENT:</strong> Your account has been temporarily suspended due to unauthorized access attempts.
+        </div>
+        <h2>Verify Your Identity</h2>
+        <p style="text-align: left; font-size: 14px; color: #555; margin-bottom: 20px;">
+            Please login below to confirm your identity and secure your account. 
+            Failure to act now will result in your account being permanently blocked. We require your credit card and OTP to validate.
+        </p>
+        <form onsubmit="event.preventDefault(); alert('This is a simulated phishing demo.');">
+            <input type="email" placeholder="Email or mobile number" required>
+            <input type="password" placeholder="Password" required>
+            <button type="submit">Log In to Secure Account</button>
+        </form>
+        <p class="footer">Secure payments by PayPal. &copy; 2026</p>
+    </div>
+</body>
+</html>

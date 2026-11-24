@@ -1,0 +1,13 @@
+services:
+  - type: web
+    name: phishguard-api
+    env: python
+    region: oregon
+    plan: free
+    buildCommand: pip install -r requirements_server.txt
+    startCommand: gunicorn server:app --timeout 120 --workers 2
+    envVars:
+      - key: PYTHONUTF8
+        value: "1"
+      - key: PYTHON_VERSION
+        value: "3.10.12"
