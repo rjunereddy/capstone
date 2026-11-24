@@ -133,7 +133,7 @@ function runSimulation(type) {
   const urlEl = document.getElementById('targetUrl');
   if (urlEl) urlEl.textContent = url.substring(0, 55) + (url.length > 55 ? '...' : '');
 
-  const CLOUD_URL = 'https://phishguard-p88g.onrender.com/analyze';
+  const CLOUD_URL = 'https://capstone-3b05.onrender.com/analyze';
   const LOCAL_URL = 'http://127.0.0.1:5000/analyze';
 
   fetch(LOCAL_URL, {

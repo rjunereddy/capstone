@@ -3,7 +3,7 @@
 
 'use strict';
 
-const RENDER_URL = 'https://phishguard-p88g.onrender.com';
+const RENDER_URL = 'https://capstone-3b05.onrender.com';
 const LOCAL_URL = 'http://127.0.0.1:5000';
 const SERVER_URL = `${RENDER_URL}/analyze`;
 const HEALTH_URL = `${RENDER_URL}/health`;
@@ -43,6 +43,9 @@ chrome.tabs.onUpdated.addListener(async (tabId, changeInfo, tab) => {
   let pageText = '';
   let domFeatures = {};
   try {
+    const tabCheck = await chrome.tabs.get(tabId).catch(() => null);
+    if (!tabCheck) return;
+
     const res = await chrome.scripting.executeScript({
       target: { tabId },
       func: () => {
@@ -92,6 +95,10 @@ chrome.tabs.onUpdated.addListener(async (tabId, changeInfo, tab) => {
 
     const data = await res.json();
     if (data.status === 'ignored') return;
+
+    // Verify tab is still open before updating badge or injecting UI
+    const currentTab = await chrome.tabs.get(tabId).catch(() => null);
+    if (!currentTab) return;
 
     // Save per-tab result for popup
     await chrome.storage.local.set({ [tabId.toString()]: data });
@@ -184,8 +191,10 @@ chrome.tabs.onRemoved.addListener((tabId) => {
 
 // ── UTILS ─────────────────────────────────────────────────
 function setBadge(tabId, text, color) {
-  chrome.action.setBadgeText({ text, tabId });
-  chrome.action.setBadgeBackgroundColor({ color, tabId });
+  try {
+    chrome.action.setBadgeText({ text, tabId }).catch(() => {});
+    chrome.action.setBadgeBackgroundColor({ color, tabId }).catch(() => {});
+  } catch {}
 }
 
 function sleep(ms) {

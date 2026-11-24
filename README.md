@@ -54,7 +54,7 @@ Because the heavy AI inference engine is hosted securely in the cloud, users do 
 1. Open Google Chrome and navigate to `chrome://extensions/`.
 2. Enable **Developer mode** in the top right.
 3. Click **Load unpacked** and select the `/extension` directory inside this repository.
-4. The extension automatically connects to the live Render Cloud API (`https://phishguard-p88g.onrender.com`).
+4. The extension automatically connects to the live Render Cloud API (`https://capstone-3b05.onrender.com`).
 
 ### 2. Cloud Server Deployment (For Developers)
 The backend is natively configured for automated Render Cloud deployment.
